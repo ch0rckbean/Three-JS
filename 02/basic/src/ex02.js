@@ -10,6 +10,7 @@ export default function example() {
   renderer.setSize(window.innerWidth, window.innerHeight);
   //   console.log(window.devicePixelRatio); // 2
   renderer.setPixelRatio(window.devicePixelRatio > 1 ? 2 : 1); // 고밀도 해상도
+  // 삼항연산자 : 성능면 유리
 
   // Scene
   const scene = new THREE.Scene();
