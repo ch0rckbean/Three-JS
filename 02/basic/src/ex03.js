@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-// ------ 주제: 브라우저 창 사이즈 변경에 대응하기
+// ------ 주제: 배경의 색, 투명도 설정
 
 export default function example() {
   // Renderer
