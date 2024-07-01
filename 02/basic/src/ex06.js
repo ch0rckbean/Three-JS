@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-// ------ 주제: Animation
+// ------ 주제: Animation 보정
 
 export default function example() {
   // Renderer
@@ -52,15 +52,13 @@ export default function example() {
 
   function draw() {
     // console.log(clock.getElapsedTime()); // 초 단위로 찍히는 절대시간
-    const time = clock.getElapsedTime();
+    const delta = clock.getDelta();
+    // - 함수 실행 시마다 시간 간격
+    // - getElapsedTime랑 같이 못 씀
 
-    // 각도는 Radian을 사용
-    // 360도는 2파이
-    // mesh.rotation.y += 0.1;
-    // mesh.rotation.y += THREE.MathUtils.degToRad(1); // (인자)도
-    mesh.rotation.y = time; // 시간 경과하므로 + 안 써도 됨
-    mesh.position.y += 0.01;
-    // mesh.position.y = time;
+    mesh.rotation.y += 2 * delta;
+    mesh.position.y += delta;
+
     if (mesh.position.y > 3) {
       mesh.position.y = 0;
     }

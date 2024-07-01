@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-// ------ 주제: Animation
+// ------ 주제: Animation 보정
 
 export default function example() {
   // Renderer
@@ -13,9 +13,6 @@ export default function example() {
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(window.devicePixelRatio > 1 ? 2 : 1); // 고밀도 해상도
 
-  // renderer 색 넣기
-  //   renderer.setClearAlpha(0.5); // 불투명도 지수
-  //   renderer.setClearColor(0x00ff00);
   renderer.setClearColor('#00ff00');
   renderer.setClearAlpha(0.5);
 
@@ -48,19 +45,16 @@ export default function example() {
   scene.add(mesh);
 
   // 그리기
-  const clock = new THREE.Clock();
+  let oldTime = Date.now();
 
   function draw() {
-    // console.log(clock.getElapsedTime()); // 초 단위로 찍히는 절대시간
-    const time = clock.getElapsedTime();
+    const newTime = Date.now();
+    const deltaTime = newTime - oldTime;
+    oldTime = newTime;
 
-    // 각도는 Radian을 사용
-    // 360도는 2파이
-    // mesh.rotation.y += 0.1;
-    // mesh.rotation.y += THREE.MathUtils.degToRad(1); // (인자)도
-    mesh.rotation.y = time; // 시간 경과하므로 + 안 써도 됨
-    mesh.position.y += 0.01;
-    // mesh.position.y = time;
+    mesh.rotation.y += 0.001 * deltaTime;
+    mesh.position.y += 0.001 * deltaTime;
+
     if (mesh.position.y > 3) {
       mesh.position.y = 0;
     }
