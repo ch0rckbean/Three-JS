@@ -1,6 +1,7 @@
 import * as THREE from 'three';
+import Stats from 'three/examples/jsm/libs/stats.module.js';
 
-// ----- 주제: AxesHelper, GridHelper
+// ----- 주제: 초당 프레임 수 보기(Stats)
 
 export default function example() {
   // Renderer
@@ -22,8 +23,7 @@ export default function example() {
     0.1,
     1000
   );
-  camera.position.x = -1;
-  camera.position.y = 3;
+  camera.position.y = 1;
   camera.position.z = 5;
   scene.add(camera);
 
@@ -35,31 +35,25 @@ export default function example() {
   scene.add(directionalLight);
   scene.add(ambientLight);
 
-  // AxesHelper
-  const axesHelper = new THREE.AxesHelper(3);
-  scene.add(axesHelper);
-
-  // GridHelper
-  const grideHelper = new THREE.GridHelper(5);
-  scene.add(grideHelper);
-
   // Mesh
   const geometry = new THREE.BoxGeometry(1, 1, 1);
   const material = new THREE.MeshStandardMaterial({
     color: 'seagreen',
   });
   const mesh = new THREE.Mesh(geometry, material);
-  mesh.position.x = 2;
   mesh.position.z = 2;
   scene.add(mesh);
-  camera.lookAt(mesh.position);
 
+  // Stats
+  const stats = new Stats();
+  document.body.append(stats.domElement);
   // 그리기
   const clock = new THREE.Clock();
 
   function draw() {
     const time = clock.getElapsedTime();
 
+    stats.update();
     mesh.rotation.y = time;
 
     renderer.render(scene, camera);
