@@ -1,11 +1,10 @@
 import * as THREE from 'three';
-import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls';
+import { FlyControls } from 'three/examples/jsm/controls/FlyControls';
 
-// ----- 주제: TrackballControls
-// - OrbitControlls와 다른점
-// -- 수직 이동 가능
-// -- controls.update() 필요
-// -- enableDamping 기본으로 적용된 상태
+// ----- 주제: FlyControls
+// - controls.update(여기 delta값 넣어야 함)
+// - WASD, 마우스 버튼, Q,E,F,R 버튼 조작
+// - 마우스 위치에 영향 받음
 
 export default function example() {
   // Renderer
@@ -41,12 +40,10 @@ export default function example() {
   scene.add(directionalLight);
 
   // Controls
-  const controls = new TrackballControls(camera, renderer.domElement);
-  controls.enableDamping = true; // 컨트롤 느낌 부드럽게 + update 필요
-  // controls.enableZoom = false;
-  controls.maxDistance = 20;
-  controls.minDistance = 5;
-  controls.target.set(3, 3, 3); // 회전 중심점의 target
+  const controls = new FlyControls(camera, renderer.domElement);
+  controls.rollSpeed = 0.05; // 0.05가 디폴트
+  controls.movementSpeed = 3; // 1이 디폴트
+  controls.dragToLook - true; // 마우스에 반응 x. 드래그에만 반응
 
   // Mesh
   const geometry = new THREE.BoxGeometry(1, 1, 1);
@@ -74,7 +71,7 @@ export default function example() {
 
   function draw() {
     const delta = clock.getDelta();
-    controls.update();
+    controls.update(delta);
 
     renderer.render(scene, camera);
     renderer.setAnimationLoop(draw);
