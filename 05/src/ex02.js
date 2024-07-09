@@ -40,9 +40,10 @@ export default function example() {
   // (카메라, canvas)
 
   // Mesh
-  const geometry = new THREE.SphereGeometry(5, 64, 64);
+  // const geometry = new THREE.SphereGeometry(5, 64, 64);
+  const geometry = new THREE.PlaneGeometry(10, 10, 32, 32);
   const material = new THREE.MeshStandardMaterial({
-    color: 'orangered',
+    color: 'seagreen',
     side: THREE.DoubleSide,
     flatShading: true,
   });
@@ -52,18 +53,35 @@ export default function example() {
   // console.log(geometry.attributes.position.array);
   // x,y,z 포지션 값 다 갖고 있어서 3개 숫자씩 끊어서 봐야 함
   const positionArr = geometry.attributes.position.array;
+
+  const randomArr = [];
+
   for (let i = 0; i < positionArr.length; i += 3) {
     // Vertex 한개의 x,y,z 좌표 랜덤 조정
     positionArr[i] = positionArr[i] + (Math.random() - 0.5) * 0.2; //x
     positionArr[i + 1] = positionArr[i + 1] + (Math.random() - 0.5) * 0.2; //y
     positionArr[i + 2] = positionArr[i + 2] + (Math.random() - 0.5) * 0.2; //z
+
+    // 각 값 조정 위해 미리 랜덤 값 세팅 되어 있어야
+    randomArr[i] = (Math.random() - 0.5) * 0.2;
+    randomArr[i + 1] = (Math.random() - 0.5) * 0.2;
+    randomArr[i + 2] = (Math.random() - 0.5) * 0.2;
   }
 
   // 그리기
   const clock = new THREE.Clock();
 
   function draw() {
-    const delta = clock.getDelta();
+    const time = clock.getElapsedTime() * 3;
+    for (let i = 0; i < positionArr.length; i += 3) {
+      // 그래프가 파형이므로 사용(진동)
+      // - x축: 각도
+      positionArr[i] += Math.sin(time + randomArr[i] * 10) * 0.002;
+      positionArr[i + 1] += Math.sin(time + randomArr[i + 1] * 10) * 0.002;
+      positionArr[i + 2] += Math.sin(time + randomArr[i + 2] * 10) * 0.002;
+    }
+
+    geometry.attributes.position.needsUpdate = true;
 
     renderer.render(scene, camera);
     renderer.setAnimationLoop(draw);
