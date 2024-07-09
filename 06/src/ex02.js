@@ -3,9 +3,9 @@ import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls
 
 // ----- 주제: TrackballControls
 // - OrbitControlls와 다른점
-// - controls.update() 필요
-// - 수직 이동 가능
-// - enableDamping 기본 적용 상태
+// -- 수직 이동 가능
+// -- controls.update() 필요
+// -- enableDamping 기본으로 적용된 상태
 
 export default function example() {
   // Renderer
