@@ -1,7 +1,11 @@
 import * as THREE from 'three';
-import { DragControls } from 'three/examples/jsm/controls/DragControls';
-
-// ----- 주제: DragControls
+import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls';
+import { KeyController } from './KeyController';
+// ----- 주제: PointerLockControls에 키보드 컨트롤 추가
+// 1. RequestAnimationFrame에 계속 동작 함수 호출
+// 2. Key 배열 만들어서
+// 3. Key 누르면 Key를 속성으로 추가해 일치하는 Key Evt 호출
+// 4. 동작 정리 시 Key 배열에서 삭제
 
 export default function example() {
   // Renderer
@@ -37,14 +41,38 @@ export default function example() {
   scene.add(directionalLight);
 
   // Controls;
-  const meshes = [];
-  const controls = new DragControls(meshes, camera, renderer.domElement);
-  // 파라미터
-  // 1. 어떤 Mesh Drag 할 건지 : 배열로 삽입
+  const controls = new PointerLockControls(camera, renderer.domElement);
+  // console.log(controls.domElement=== renderer.domElement) // true. canvas
+
+  // 키보드 컨드롤
+  const keyController = new KeyController();
+
+  function walk() {
+    if (keyController.keys['KeyW'] || keyController.keys['ArrowUp']) {
+      controls.moveForward(0.02);
+    }
+    if (keyController.keys['KeyS'] || keyController.keys['ArrowDown']) {
+      controls.moveForward(-0.02);
+    }
+    if (keyController.keys['KeyA'] || keyController.keys['ArrowLeft']) {
+      controls.moveRight(-0.02);
+    }
+    if (keyController.keys['KeyD'] || keyController.keys['ArrowRight']) {
+      controls.moveRight(0.02);
+    }
+  }
 
   // Event
-  controls.addEventListener('dragstart', (e) => {
-    console.log(e.object.name);
+  controls.domElement.addEventListener('click', () => {
+    controls.lock();
+    // pointer lock : 마우스 커서 사라지면서 마인크래프트처럼 보이게 됨
+  });
+
+  controls.addEventListener('lock', () => {
+    console.log('lock');
+  });
+  controls.addEventListener('unlock', () => {
+    console.log('unlock');
   });
 
   // Mesh
@@ -61,15 +89,11 @@ export default function example() {
 				${50 + Math.floor(Math.random() * 205)}
 			)`,
     });
-
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.x = (Math.random() - 0.5) * 5;
     mesh.position.y = (Math.random() - 0.5) * 5;
     mesh.position.z = (Math.random() - 0.5) * 5;
-    mesh.name = `box=${i}`;
     scene.add(mesh);
-
-    meshes.push(mesh);
   }
 
   // 그리기
@@ -77,6 +101,7 @@ export default function example() {
 
   function draw() {
     const delta = clock.getDelta();
+    walk(); // 계속해 함수 호출
 
     renderer.render(scene, camera);
     renderer.setAnimationLoop(draw);

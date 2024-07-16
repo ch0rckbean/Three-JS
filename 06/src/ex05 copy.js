@@ -1,7 +1,7 @@
 import * as THREE from 'three';
-import { DragControls } from 'three/examples/jsm/controls/DragControls';
+import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls';
 
-// ----- 주제: DragControls
+// ----- 주제: PointerLockControls에 키보드 컨트롤 추
 
 export default function example() {
   // Renderer
@@ -37,14 +37,20 @@ export default function example() {
   scene.add(directionalLight);
 
   // Controls;
-  const meshes = [];
-  const controls = new DragControls(meshes, camera, renderer.domElement);
-  // 파라미터
-  // 1. 어떤 Mesh Drag 할 건지 : 배열로 삽입
+  const controls = new PointerLockControls(camera, renderer.domElement);
+  // console.log(controls.domElement=== renderer.domElement) // true. canvas
 
   // Event
-  controls.addEventListener('dragstart', (e) => {
-    console.log(e.object.name);
+  controls.domElement.addEventListener('click', () => {
+    controls.lock();
+    // pointer lock : 마우스 커서 사라지면서 마인크래프트처럼 보이게 됨
+  });
+
+  controls.addEventListener('lock', () => {
+    console.log('lock');
+  });
+  controls.addEventListener('unlock', () => {
+    console.log('unlock');
   });
 
   // Mesh
@@ -61,15 +67,11 @@ export default function example() {
 				${50 + Math.floor(Math.random() * 205)}
 			)`,
     });
-
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.x = (Math.random() - 0.5) * 5;
     mesh.position.y = (Math.random() - 0.5) * 5;
     mesh.position.z = (Math.random() - 0.5) * 5;
-    mesh.name = `box=${i}`;
     scene.add(mesh);
-
-    meshes.push(mesh);
   }
 
   // 그리기
