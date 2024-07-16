@@ -45,8 +45,8 @@ export default function example() {
   });
   const material2 = new THREE.MeshStandardMaterial({
     color: 'orangered',
-    roughness: 0, //0이 제일 맨질맨질
-    metalness: 0.3,
+    roughness: 0, // 0이 제일 맨질맨질
+    metalness: 0.3, // 클수록 까맣게 변함
   });
   const mesh1 = new THREE.Mesh(geometry, material1);
   const mesh2 = new THREE.Mesh(geometry, material2);
