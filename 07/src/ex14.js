@@ -1,44 +1,25 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
-// ----- 주제: MeshStandardMaterial에 효과 더하기
+// ----- 주제: EnvironmentMap
+// - 주변에 뭔가 있는 것처럼
 
 export default function example() {
   // 텍스처 이미지 로드
-  const loadingManager = new THREE.LoadingManager();
-  // 여러 이미지 로드 시 Control 용이
-  loadingManager.onStart = () => {
-    console.log('로드 시작');
-  };
-  loadingManager.onProgress = (img) => {
-    console.log(img + ' 로드');
-  };
-  loadingManager.onLoad = () => {
-    console.log('로드 완료');
-  };
-  loadingManager.onError = () => {
-    console.log('에러');
-  };
+  const cubeTextureLoader = new THREE.CubeTextureLoader();
+  const envTex = cubeTextureLoader.setPath('/textures/cubemap/').load([
+    // 순서 중요
+    // + - 순서
+    // xyz 순서
+    'px.png',
+    'nx.png',
+    'py.png',
+    'ny.png',
+    'pz.png',
+    'nz.png',
+  ]);
 
-  const textureLoader = new THREE.TextureLoader(loadingManager);
-  const normalTxt = textureLoader.load(
-    '/textures/lava/Stylized_Lava_001_normal.png'
-  );
-  const ambientTxt = textureLoader.load(
-    '/textures/lava/Stylized_Lava_001_ambientOcclusion.png'
-  );
-  const baseColorTxt = textureLoader.load(
-    '/textures/lava/Stylized_Lava_001_basecolor.png'
-  );
-  const emissiveTxt = textureLoader.load(
-    '/textures/lava/Stylized_Lava_001_emissive.png'
-  );
-  const heightTxt = textureLoader.load(
-    '/textures/lava/Stylized_Lava_001_height.png'
-  );
-  const roughnessTxt = textureLoader.load(
-    '/textures/lava/Stylized_Lava_001_roughness.png'
-  );
+  console.log(envTex);
 
   // Renderer
   const canvas = document.querySelector('#three-canvas');
@@ -76,14 +57,9 @@ export default function example() {
   // Mesh
   const geometry = new THREE.BoxGeometry(3, 3, 3);
   const material = new THREE.MeshBasicMaterial({
-    map: normalTxt,
-    normalMap: normalTxt, // 입체감
-    // roughness: 0.3, // 거칠기
-    roughness: roughnessTxt,
-    metalness: 0.3, // 메탈
-    // aoMap: ambientTxt, // 어둡게
-    // aoMapIntensity: 10,
-    color: 'pink', // 따로 적용 O
+    // metalness: 2,
+    // roughness: 0.1,
+    envMap: envTex,
   });
   const mesh = new THREE.Mesh(geometry, material);
 
