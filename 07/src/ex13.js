@@ -78,12 +78,12 @@ export default function example() {
   const material = new THREE.MeshBasicMaterial({
     map: normalTxt,
     normalMap: normalTxt, // 입체감
-    // roughness: 0.3,
+    // roughness: 0.3, // 거칠기
     roughness: roughnessTxt,
-    metalness: 0.3,
+    metalness: 0.3, // 메탈
     // aoMap: ambientTxt, // 어둡게
     // aoMapIntensity: 10,
-    color: 'pink',
+    color: 'pink', // 따로 적용 O
   });
   const mesh = new THREE.Mesh(geometry, material);
 
