@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
-// ----- 주제: MeshMatcapMaterial
+// ----- 주제: 로딩 매니저(여러개의 텍스처 이미지 로드하기)
 
 export default function example() {
   // 텍스처 이미지 로드
@@ -21,7 +21,24 @@ export default function example() {
   };
 
   const textureLoader = new THREE.TextureLoader(loadingManager);
-  const matcapTex = textureLoader.load('/textures/matcap/silver.jpg');
+  const normalTxt = textureLoader.load(
+    '/textures/lava/Stylized_Lava_001_normal.png'
+  );
+  const ambientTxt = textureLoader.load(
+    '/textures/lava/Stylized_Lava_001_ambientOcclusion.png'
+  );
+  const baseColorTxt = textureLoader.load(
+    '/textures/lava/Stylized_Lava_001_basecolor.png'
+  );
+  const emissiveTxt = textureLoader.load(
+    '/textures/lava/Stylized_Lava_001_emissive.png'
+  );
+  const heightTxt = textureLoader.load(
+    '/textures/lava/Stylized_Lava_001_height.png'
+  );
+  const roughnessTxt = textureLoader.load(
+    '/textures/lava/Stylized_Lava_001_roughness.png'
+  );
 
   // Renderer
   const canvas = document.querySelector('#three-canvas');
@@ -34,7 +51,7 @@ export default function example() {
 
   // Scene
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color('black');
+  scene.background = new THREE.Color('white');
 
   // Camera
   const camera = new THREE.PerspectiveCamera(
@@ -57,20 +74,28 @@ export default function example() {
   const controls = new OrbitControls(camera, renderer.domElement);
 
   // Mesh
-  const geometry = new THREE.SphereGeometry(1, 64, 64);
-  // const geometry = new THREE.ConeGeometry(1, 2, 64);
-  const material = new THREE.MeshMatcapMaterial({
-    matcap: matcapTex,
+  const geometry = new THREE.BoxGeometry(3, 3, 3);
+  const material = new THREE.MeshBasicMaterial({
+    map: normalTxt,
+    normalMap: normalTxt, // 입체감
+    // roughness: 0.3,
+    roughness: roughnessTxt,
+    metalness: 0.3,
+    // aoMap: ambientTxt, // 어둡게
+    // aoMapIntensity: 10,
+    color: 'pink',
   });
-
   const mesh = new THREE.Mesh(geometry, material);
+
   scene.add(mesh);
+  mesh.position.x = -1.5;
 
   // 그리기
   const clock = new THREE.Clock();
 
   function draw() {
     const delta = clock.getDelta();
+
     renderer.render(scene, camera);
     renderer.setAnimationLoop(draw);
   }
@@ -84,5 +109,6 @@ export default function example() {
 
   // 이벤트
   window.addEventListener('resize', setSize);
+
   draw();
 }
