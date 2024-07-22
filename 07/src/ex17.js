@@ -32,8 +32,8 @@ export default function example() {
   // Controls
   const controls = new OrbitControls(camera, renderer.domElement);
 
-  // CanvasTexture(1)
-  const textCanvas = document.createElement('canvas'); // canvas 자체 생성
+  // CanvasTexture(1)  canvas 자체 생성
+  const textCanvas = document.createElement('canvas');
   const textContext = textCanvas.getContext('2d');
   textCanvas.width = 500;
   textCanvas.height = 500;
@@ -41,10 +41,12 @@ export default function example() {
 
   // Mesh
   const geometry = new THREE.BoxGeometry(1, 1, 1);
-  // CanvasTexture(2)
+
+  // CanvasTexture(2) Mapping
   const material = new THREE.MeshBasicMaterial({
     map: canvasTexture,
   });
+
   const mesh = new THREE.Mesh(geometry, material);
   scene.add(mesh);
 
@@ -57,7 +59,7 @@ export default function example() {
     // CanvasTexture Animation
     material.map.needsUpdate = true;
 
-    // CanvasTexture(3)
+    // CanvasTexture(3) 속성 지정
     textContext.fillStyle = 'green';
     textContext.fillRect(0, 0, 500, 500);
 
@@ -65,6 +67,7 @@ export default function example() {
     textContext.fillStyle = 'white';
     textContext.fillRect(time * 50, 100, 50, 50);
 
+    // 글씨 넣기
     textContext.font = 'bold 50px sans-serif';
     textContext.fillText('하리봉봉', 300, 300);
 
