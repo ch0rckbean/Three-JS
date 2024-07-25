@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import dat from 'dat.gui';
 
-// ----- 주제: Light 기본 사용법
+// ----- 주제: Light 애니메이션
 
 export default function example() {
   // Renderer
@@ -32,7 +32,7 @@ export default function example() {
   const ambientLight = new THREE.AmbientLight('white', 0.5); // 전체적으로 은은하게 단색으로 깔아주는 조명(Base)
   scene.add(ambientLight);
 
-  const light = new THREE.DirectionalLight('white', 0.5); // 태양광 같은 Light
+  const light = new THREE.DirectionalLight('yellow', 0.5); // 태양광 같은 Light
   light.position.y = 3;
   scene.add(light);
 
@@ -77,7 +77,11 @@ export default function example() {
   const clock = new THREE.Clock();
 
   function draw() {
-    const delta = clock.getDelta();
+    // const delta = clock.getDelta();
+    const time = clock.getElapsedTime();
+    // 각도를 계속 늘림
+    light.position.x = Math.cos(time) * 5; // x좌표
+    light.position.z = Math.sin(time) * 5; // y좌표(3차원)
 
     renderer.render(scene, camera);
     renderer.setAnimationLoop(draw);
