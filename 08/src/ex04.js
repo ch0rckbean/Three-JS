@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import dat from 'dat.gui';
 
-// ----- 주제: spotLight
+// ----- 주제: SpotLight
 
 export default function example() {
   // Renderer
