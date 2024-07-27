@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
-// ----- 주제: 특정 방향의 광선(Ray)에 맞은 Mesh 판별하기
+// ----- 주제: 특정 광선을 지나는 메쉬 체크하기
 
 export default function example() {
   // Renderer
@@ -56,20 +56,45 @@ export default function example() {
   const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
   const boxMaterial = new THREE.MeshStandardMaterial({ color: 'plum' });
   const boxMesh = new THREE.Mesh(boxGeometry, boxMaterial);
+  boxMesh.name = 'box';
 
   const torusGeometry = new THREE.TorusGeometry(2, 0.5, 16, 100);
   const torusMaterial = new THREE.MeshStandardMaterial({ color: 'lime' });
   const torusMesh = new THREE.Mesh(torusGeometry, torusMaterial);
-
+  torusMesh.name = 'torus';
   scene.add(boxMesh, torusMesh);
 
   const meshes = [boxMesh, torusMesh];
+  const raycaster = new THREE.Raycaster();
 
   // 그리기
   const clock = new THREE.Clock();
 
   function draw() {
-    const delta = clock.getDelta();
+    // const delta = clock.getDelta();
+    const time = clock.getElapsedTime();
+    boxMesh.position.y = Math.sin(time) * 2;
+    torusMesh.position.y = Math.cos(time) * 2;
+    // 원래 색 복구
+    boxMesh.material.color.set('plum');
+    torusMesh.material.color.set('lime');
+
+    const origin = new THREE.Vector3(0, 0, 100);
+    // const direction = new THREE.Vector3(0, 0, -1); // 방향의 시작점
+
+    // 정규화 필요
+    const direction = new THREE.Vector3(0, 0, -100);
+    // console.log(direction.length); // 100
+    direction.normalize();
+    // console.log(direction.length); // 1
+    raycaster.set(origin, direction);
+
+    const intersects = raycaster.intersectObjects(meshes);
+    intersects.forEach((item) => {
+      // Ray에 맞은 item
+      console.log(item.object.name);
+      item.object.material.color.set('blue');
+    });
 
     renderer.render(scene, camera);
     renderer.setAnimationLoop(draw);
