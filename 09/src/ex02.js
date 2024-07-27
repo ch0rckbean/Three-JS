@@ -2,8 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 // ----- 주제: Raycaster
-// 1. Line으로 선 만들고 메쉬 배치하기
-// 2. 특정 광선을 지나는 메쉬 체크하기
+// 3. 클릭한 메쉬 감지하기
 
 export default function example() {
   // Renderer
@@ -45,16 +44,6 @@ export default function example() {
 
   // Mesh
   //Material
-  const lineMaterial = new THREE.LineBasicMaterial({ color: 'yellow' }); // 선 만들 때 씀
-  const points = [];
-  // 앞 ~ 뒤 선분
-  points.push(new THREE.Vector3(0, 0, 100));
-  points.push(new THREE.Vector3(0, 0, -100));
-  // Geo
-  const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
-  const guide = new THREE.Line(lineGeometry, lineMaterial);
-  scene.add(guide);
-
   const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
   const boxMaterial = new THREE.MeshStandardMaterial({ color: 'plum' });
   const boxMesh = new THREE.Mesh(boxGeometry, boxMaterial);
@@ -68,6 +57,8 @@ export default function example() {
 
   const meshes = [boxMesh, torusMesh];
   const raycaster = new THREE.Raycaster();
+  const mouse = new THREE.Vector2(); // 2차원 - x,y 만 갖고 있음
+  // console.log(mouse)
 
   // 그리기
   const clock = new THREE.Clock();
@@ -77,29 +68,25 @@ export default function example() {
     const time = clock.getElapsedTime();
     boxMesh.position.y = Math.sin(time) * 2;
     torusMesh.position.y = Math.cos(time) * 2;
-    // 원래 색 복구
-    boxMesh.material.color.set('plum');
-    torusMesh.material.color.set('lime');
-
-    const origin = new THREE.Vector3(0, 0, 100);
-    // const direction = new THREE.Vector3(0, 0, -1); // 방향의 시작점
-
-    // 정규화 필요
-    const direction = new THREE.Vector3(0, 0, -100);
-    // console.log(direction.length); // 100
-    direction.normalize();
-    // console.log(direction.length); // 1
-    raycaster.set(origin, direction);
-
-    const intersects = raycaster.intersectObjects(meshes);
-    intersects.forEach((item) => {
-      // Ray에 맞은 item
-      //   console.log(item.object.name);
-      item.object.material.color.set('blue');
-    });
 
     renderer.render(scene, camera);
     renderer.setAnimationLoop(draw);
+  }
+
+  function checkIntersects() {
+    raycaster.setFromCamera(mouse, camera);
+    // mouse Evt 감지(origin이 카메라에 있다고 생각)
+    // mouse: 클릭한 지점
+    const intersects = raycaster.intersectObjects(meshes);
+    for (const item of intersects) {
+      console.log(item.object.name);
+      // == if(intersects[0]){
+      // console.log(intersects[0].object.name)
+      // }
+      break;
+      // 두 개 겹칠 시, 처음 만나는 item만 해당 되도록 break 추가
+      // 처음 나오는 아이템만 찍고 for문 종료
+    }
   }
 
   function setSize() {
@@ -111,6 +98,13 @@ export default function example() {
 
   // 이벤트
   window.addEventListener('resize', setSize);
-
+  canvas.addEventListener('click', (e) => {
+    console.log(e.clientX, e.clientY); //마우스 클릭 위치
+    // y 좌표 변환 필요
+    mouse.x = (e.clientX / canvas.clientWidth) * 2 - 1;
+    mouse.y = -((e.clientY / canvas.clientHeight) * 2 - 1);
+    // console.log(mouse);
+    checkIntersects();
+  });
   draw();
 }
