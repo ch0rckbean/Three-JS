@@ -3,6 +3,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 // ----- 주제: Raycaster
 // 3. 클릭한 메쉬 감지하기
+// 4. 드래그 클릭 방지
 
 export default function example() {
   // Renderer
@@ -74,12 +75,15 @@ export default function example() {
   }
 
   function checkIntersects() {
+    if (mouseMoved) return;
+
     raycaster.setFromCamera(mouse, camera);
     // mouse Evt 감지(origin이 카메라에 있다고 생각)
     // mouse: 클릭한 지점
     const intersects = raycaster.intersectObjects(meshes);
     for (const item of intersects) {
       console.log(item.object.name);
+      item.object.material.color.set('blue');
       // == if(intersects[0]){
       // console.log(intersects[0].object.name)
       // }
@@ -105,6 +109,27 @@ export default function example() {
     mouse.y = -((e.clientY / canvas.clientHeight) * 2 - 1);
     // console.log(mouse);
     checkIntersects();
+  });
+  let mouseMoved; // 마우스 드래그 했는지 true/false
+  let clickStartX;
+  let clickStartY;
+  let clickStartTime;
+
+  canvas.addEventListener('mousedown', (e) => {
+    clickStartX = e.clientX;
+    clickStartY = e.clientY;
+    clickStartTime = Date.now();
+  });
+  canvas.addEventListener('mouseup', (e) => {
+    const xGap = Math.abs(e.clientX - clickStartX);
+    const yGap = Math.abs(e.clientY - clickStartY);
+    const timeGap = Date.now() - clickStartTime;
+
+    if (xGap > 5 || yGap > 5 || timeGap > 500) {
+      mouseMoved = true;
+    } else {
+      mouseMoved = false;
+    }
   });
   draw();
 }
