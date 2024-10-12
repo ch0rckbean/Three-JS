@@ -47,17 +47,20 @@ export default function example() {
   // Cannon (물리 엔진)
   // 1. World 만들기
   const cannonWorld = new CANNON.World();
-  // 2. 중력 세팅(각기 다르게 가능) -로 해야 아래로 떨어짐
+  // 2. 중력 세팅(각기 다르게 가능) -로 해야 아래로 떨어짐. 지구: 9.8 정도
   cannonWorld.gravity.set(0, -10, 0);
 
-  const floarShape = new CANNON.Plane();
+  // 바닥
+  const floorShape = new CANNON.Plane();
   const floorBody = new CANNON.Body({
     mass: 0, // 중력 영향 안 받음(같이 떨어지면 안 됨)
     position: new CANNON.Vec3(-1, 0, 0),
-    shape: floarShape,
+    shape: floorShape,
   });
   floorBody.quaternion.setFromAxisAngle(new CANNON.Vec3(-1, 0, 0), Math.PI / 2); // rotation 대신
   cannonWorld.addBody(floorBody);
+
+  // 떨어질 직육면체
   const boxShape = new CANNON.Box(new CANNON.Vec3(0.25, 2.5, 0.25));
   const boxBody = new CANNON.Body({
     mass: 1, // 클수록(무거울수록) 빨리 떨어짐
