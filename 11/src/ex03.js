@@ -1,8 +1,9 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import * as CANNON from 'cannon-es';
+import { PreventDragClick } from './PreventDragClick';
 
-// ----- 주제: Contact Material
+// ----- 주제: Force
 // cannon.js 문서
 // http://schteppe.github.io/cannon.js/docs/
 // 주의! https 아니고 http
@@ -54,8 +55,6 @@ export default function example() {
 
   // Contact Material
   const defaultMaterial = new CANNON.Material('default');
-  const rubberMaterial = new CANNON.Material('rubber');
-  const ironMaterial = new CANNON.Material('iron');
   const defaultContactMaterial = new CANNON.ContactMaterial(
     defaultMaterial,
     defaultMaterial,
@@ -65,26 +64,6 @@ export default function example() {
     }
   ); // 부딪힐 물질 인자로 넣기
   cannonWorld.defaultContactMaterial = defaultContactMaterial;
-
-  const rubberDefaultContactMaterial = new CANNON.ContactMaterial(
-    rubberMaterial,
-    defaultMaterial,
-    {
-      friction: 0.5,
-      restitution: 0.7,
-    }
-  );
-  cannonWorld.addContactMaterial(rubberDefaultContactMaterial);
-
-  const ironDefaultContactMaterial = new CANNON.ContactMaterial(
-    ironMaterial,
-    defaultMaterial,
-    {
-      friction: 0.5,
-      restitution: 0,
-    }
-  );
-  cannonWorld.addContactMaterial(rubberDefaultContactMaterial);
 
   // 바닥
   const floorShape = new CANNON.Plane();
@@ -103,8 +82,7 @@ export default function example() {
     mass: 1, // 클수록(무거울수록) 빨리 떨어짐
     position: new CANNON.Vec3(0, 10, 0),
     shape: sphereShape,
-    // material: rubberMaterial,
-    material: ironMaterial,
+    material: defaultMaterial,
   });
   cannonWorld.addBody(sphereBody);
 
@@ -144,6 +122,14 @@ export default function example() {
     sphereMesh.position.copy(sphereBody.position); //위치
     sphereMesh.quaternion.copy(sphereBody.quaternion); //회전
 
+    // 속도 감소 : 속도 0에 수렴
+    sphereBody.velocity.x *= 0.98;
+    sphereBody.velocity.y *= 0.98;
+    sphereBody.velocity.z *= 0.98;
+    sphereBody.angularVelocity.x *= 0.98;
+    sphereBody.angularVelocity.y *= 0.98;
+    sphereBody.angularVelocity.z *= 0.98;
+
     renderer.render(scene, camera);
     renderer.setAnimationLoop(draw);
   }
@@ -157,6 +143,24 @@ export default function example() {
 
   // 이벤트
   window.addEventListener('resize', setSize);
+  canvas.addEventListener('click', () => {
+    // 드래그 시 클릭 적용 안 되도록
+    if (preventDragClick.mouseMoved) return;
 
+    // 클릭 시 바람 부는 함수
+
+    // 클릭 여러번 해도 일정 속도로 감(안 빨라짐)
+    sphereBody.velocity.x = 0;
+    sphereBody.velocity.y = 0;
+    sphereBody.velocity.z = 0;
+    sphereBody.angularVelocity.x = 0;
+    sphereBody.angularVelocity.y = 0;
+    sphereBody.angularVelocity.z = 0;
+
+    sphereBody.applyForce(new CANNON.Vec3(-500, 0, 0).sphereBody.position);
+    // 방향, 어디에 줄지
+  });
+
+  const preventDragClick = new PreventDragClick(canvas);
   draw();
 }
